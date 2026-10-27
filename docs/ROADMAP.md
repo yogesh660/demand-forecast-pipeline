@@ -56,7 +56,7 @@ flowchart LR
 
 | Need | Choice | Why |
 |---|---|---|
-| Orchestration | **Airflow 3** (TaskFlow API) | most requested orchestrator in German DS/ML job ads; asset-aware scheduling |
+| Orchestration | **Airflow 3** (TaskFlow API) | the most widely used workflow orchestrator for data and ML pipelines; asset-aware scheduling |
 | Data processing | **Polars + DuckDB** | fast on a laptop or a 2-core VM, no Spark needed |
 | Data validation | **pandera** | schema checks as Python code, light compared to Great Expectations |
 | Baselines | **statsforecast** (seasonal naive, ETS, Croston for intermittent items) | fast, standard references |
@@ -98,28 +98,23 @@ uv project, CLAUDE.md harness, Makefile, CI, DVC with M5 download script, pander
 ### M1 - Models and honest backtest
 Baselines, LightGBM, Chronos and TimesFM zero-shot, rolling backtest, MLflow logging,
 comparison table in the README.
-**Shows:** time-series depth; a clear answer to "are foundation models worth it here?"
 
 ### M2 - Airflow pipeline
 Airflow 3 DAG with the steps above, retries, idempotent writes (re-running a week overwrites,
 never duplicates), backfill for past weeks, champion/challenger promotion.
-**Shows:** orchestration and MLOps
 
 ### M3 - Hierarchy and intervals
 Reconciliation across item/store/state, conformal or quantile intervals, coverage tracked over
 time.
-**Shows:** forecasting that a planning team can actually use
 
 ### M4 - LLM summary and dashboard
 Structured summary (top movers, risks, events next month) generated from the forecast table,
 automatic number check, Streamlit dashboard with history of champion metrics.
-**Shows:** grounded GenAI on top of classical ML
 
 ### M5 - Hosted and monitored
 k3s on the Oracle free ARM node (or Docker Compose on a small VPS), Airflow + MLflow + Postgres,
 weekly run on schedule, data drift report (price and demand distribution vs training window),
 alert on failed runs.
-**Shows:** a system that runs by itself, week after week
 
 ## Demo and hosting
 
@@ -129,8 +124,7 @@ alert on failed runs.
 | Live | Streamlit dashboard on a free HF CPU Space, reading the latest published forecasts | $0 |
 | Production path | Airflow + MLflow on Oracle Always Free ARM (2 OCPU / 12 GB) | $0 |
 
-Everything is CPU, so this is the cheapest project to keep fully live. Demo script for an
-interview: open the dashboard, trigger the DAG in the Airflow UI, show the MLflow comparison,
+Everything is CPU, so this is the cheapest project to keep fully live. Demo script: open the dashboard, trigger the DAG in the Airflow UI, show the MLflow comparison,
 show the promoted model and the regenerated summary.
 
 ## CI/CD
@@ -158,9 +152,3 @@ CLAUDE.md  Makefile  docs/adr/
 - Foundation models may lose to LightGBM. That is a fine result; report it honestly.
 - 12 GB RAM is tight for Airflow + Postgres + MLflow + training. Mitigation: LocalExecutor,
   training on the subset, or a small paid VPS if needed.
-
-## Interview talking points
-
-- Why WRMSSE and rolling-origin backtests instead of one train/test split.
-- When a foundation model helped (cold-start items) and when it didn't (stable fast movers).
-- How promotion works and why a model can never silently get worse in production.
